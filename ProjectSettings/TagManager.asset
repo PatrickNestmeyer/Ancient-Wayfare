@@ -3,7 +3,22 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Army
+  - Asylum
+  - City
+  - Hideout
+  - Oasis
+  - Cave
+  - Forest
+  - Desert
+  - Sea
+  - Steppe
+  - Mountain
+  - Woodland
+  - Grassland
+  - Agriculture
+  - Swamp
   layers:
   - Default
   - TransparentFX
@@ -13,8 +28,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - BlockingLayer
+  - KeyLayer
   - 
   - 
   - 
@@ -49,4 +64,10 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1356829313
+    locked: 0
+  - name: Army
+    uniqueID: 2772229301
+    locked: 0
+  - name: KeyGround
+    uniqueID: 1944412489
     locked: 0
