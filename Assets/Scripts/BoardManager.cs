@@ -5,11 +5,20 @@ using Random = UnityEngine.Random;
 
 public class BoardManager : MonoBehaviour {
 
-	public int rows = 12;
-	public int shortColumn = 2;
-	public int longColumn = 3;
-	public float positionFactorX = 1.62f;
-	public float positionFactorY = 3.0f;
+	public int rows = 13;
+	public int shortColumn = 3;
+	public int longColumn = 4;
+	public float positionFactorX = 0.8f;
+	public float positionFactorY = 2.6f;
+	public float shortPositionOffset = 1.2f;
+	public int loopOffset = -1;
+	public Level level = new Level();
+	
+	/*
+	 *Array of all rows as Vector3, via this array acess to a vector which index is known is possible.
+	 *Further via the vector the exact position can be asked.
+	 */
+	public List<Vector3>[] Positions = new List<Vector3>[13];
 	
 	public GameObject Asylum;
 	public GameObject City;
@@ -25,21 +34,32 @@ public class BoardManager : MonoBehaviour {
 	public GameObject Desert;
 	
 	private Transform boardHolder;
-	private List <Vector3> Positions = new List<Vector3>();
-	private Level level = new Level();
 	
 	private void BoardSetup()
-	{
-		Positions.Clear();
+	{	
+		int columns;
+		float X_Position;
+		float Y_Position;
+		bool isShortRow = true;
+		
+		for(int i = 0; i < Positions.Length; i++)
+		{ Positions[i].Clear(); }
+		
 		boardHolder = new GameObject ("Board").transform;
 		
-		for(int x = -2; x <= rows -2; x++)
+		for(int x = loopOffset; x < (rows + loopOffset); x++)
 		{
-			int columns = (x % 2 == 0) ? shortColumn : longColumn;	
-			for(int y = -2; y <= columns -2; y++)
+			columns = (isShortRow) ? shortColumn : longColumn;
+			for(int y = loopOffset; y < (columns + loopOffset); y++)
 			{
 				GameObject toInstantiate = null;
-				Positions.Add(new Vector3((Convert.ToSingle(x) * positionFactorX), (Convert.ToSingle(y) * positionFactorY), 0f));
+				
+				X_Position = Convert.ToSingle(x) * positionFactorX;
+				Y_Position = Convert.ToSingle(y) * positionFactorY;
+				if(isShortRow)
+					Y_Position += shortPositionOffset;
+				
+				Positions[x - loopOffset].Add(new Vector3(X_Position, Y_Position, 0f));
 				switch (level[level.Index])
 				{
 					case "gl":
@@ -66,23 +86,74 @@ public class BoardManager : MonoBehaviour {
 					default:
 						break;
 				}
-				GameObject instance = Instantiate(toInstantiate, new Vector3((Convert.ToSingle(x) * positionFactorX), (Convert.ToSingle(y) * positionFactorY),0f), Quaternion.identity) as GameObject;
+				GameObject instance = Instantiate(toInstantiate, new Vector3(X_Position, Y_Position, 0f), Quaternion.identity) as GameObject;
 				instance.transform.SetParent(boardHolder);
 				level.Index++;
 			}
+			isShortRow = !isShortRow;
 		}
 	}
+	
+	private void PlacesSetup()
+	{
+        inserObjectIntoBoard(level.asylumPosition.Row, level.asylumPosition.Column, Asylum);
+        inserObjectIntoBoard(level.cityPosition.Row, level.cityPosition.Column, City);
+		for(int i = 0; i < level.hideoutPositions.Length; i++)
+		{ 
+            GameObject toInstantiate = forestHideout;
+            if(level.hideoutType == "swp")
+                toInstantiate = swampHideout;
+            if(level.hideoutType == "cve")
+                toInstantiate = caveHideout;
+            inserObjectIntoBoard(level.hideoutPositions[i].Row, level.hideoutPositions[i].Column, toInstantiate);
+        }
+	}
+    
+    private void inserObjectIntoBoard(int rowIndex, int columnIndex, GameObject toInsert)
+    {
+       //The position of the drawn field as float
+	   float X_Position = Positions[rowIndex][columnIndex].x;
+	   float Y_Position = Positions[rowIndex][columnIndex].y;
+       
+       GameObject instance = Instantiate(toInsert, new Vector3(X_Position, Y_Position, 0f), Quaternion.identity) as GameObject;
+	   instance.transform.SetParent(boardHolder);
+    }
 
 	public void SetupScene(int level)
 	{
 		this.level.createLevel(level);
+		for(int i = 0; i < Positions.Length; i++)
+		{ Positions[i] = new List<Vector3>(); }
 		BoardSetup();
-	}	
+		PlacesSetup();
+	}
+}
+
+public class Position
+{
+	private int row;
+	private int column;
+	
+	public int Row
+	{
+		get{ return row; }
+		set{ row = value; }	
+	}
+	public int Column
+	{
+		get{ return column; }
+		set{ column = value; }
+	}
+	
+	public Position(int row, int column)
+	{
+		this.row = row;
+		this.column = column;
+	}
 }
 
 public class Level
 {
-	public string[] fields = new string[45];
 	//Sum of all fields
 	public int boardLength = 45;
 	//Walkable Fields
@@ -91,6 +162,13 @@ public class Level
 	public int keyGroundLength = 7;
 	//transient fields before or after a keyground
 	public int transientFieldsLength = 7;
+	
+	public string[] fields = new string[45];
+	
+	public string hideoutType;
+	public Position[] hideoutPositions;
+	public Position cityPosition;
+	public Position asylumPosition;
 	
 	//Indexer for fields
 	public string this[int number]
@@ -140,6 +218,11 @@ public class Level
 	
 	private void LevelOneFieldSetup()
 	{
+		hideoutType = "frs";
+		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
+		cityPosition = new Position(6, 1);
+		asylumPosition = new Position(3, 1);
+		
 		//fill ground
 		for(int i = 0; i < groundLength; i++)
 		{
@@ -156,20 +239,25 @@ public class Level
 	
 	private void LevelTwoFieldSetup()
 	{	
+		hideoutType = "swp";
+		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
+		cityPosition = new Position(6, 1);
+		asylumPosition = new Position(3, 1);
+		
 		//fill ground till transientFields
 		for(int i = 0; i < (groundLength - transientFieldsLength); i++)
 		{
 			//level 2 - egypt - consists of grassland, agriculture and woodland till transientFields ( 3 - 2 - 1)
 			rnd = Random.Range(0,6);
-			if(rnd < 3)
+			if(rnd >= 0 || rnd <= 3)
 				fields[i] = "gl";
-			if(rnd < 5)
+			if(rnd  == 4)
 				fields[i] = "ac";
 			if(rnd == 5)
 				fields[i] = "wl";
 		}
 		//fill ground from transientFields till keyGround with steppe
-		for(int i = (groundLength - transientFieldsLength); i < keyGroundLength; i++)
+		for(int i = (groundLength - transientFieldsLength); i < groundLength; i++)
 		{
 			fields[i] = "sp";
 		}
@@ -177,6 +265,11 @@ public class Level
 	
 	private void LevelThreeFieldSetup()
 	{
+		hideoutType = "cve";
+		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
+		cityPosition = new Position(6, 1);
+		asylumPosition = new Position(3, 1);
+		
 		//fill ground
 		for(int i = 0; i < groundLength; i++)
 		{
@@ -187,6 +280,11 @@ public class Level
 	
 	private void LevelFourFieldSetup()
 	{
+		hideoutType = "frs";
+		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
+		cityPosition = new Position(6, 1);
+		asylumPosition = new Position(3, 1);
+		
 		for(int i = 0; i < transientFieldsLength; i++)
 		{
 			fields[i] = "sp";
@@ -195,9 +293,9 @@ public class Level
 		{
 			//level 4 - mesopotamia - consists of grassland, agriculture and woodland till transientFields ( 3 - 2 - 1)
 			rnd = Random.Range(0,6);
-			if(rnd < 3)
+			if(rnd >= 0 || rnd <= 3)
 				fields[i] = "gl";
-			if(rnd < 5)
+			if(rnd  == 4)
 				fields[i] = "ac";
 			if(rnd == 5)
 				fields[i] = "wl";
