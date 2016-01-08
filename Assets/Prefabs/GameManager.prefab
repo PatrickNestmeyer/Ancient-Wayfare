@@ -1,13 +1,85 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &114388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 462380}
+  - 114: {fileID: 11437594}
+  - 114: {fileID: 11441548}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &462380
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 114388}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+--- !u!114 &11437594
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 114388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca90c1f2941045489b15d176a8330cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rows: 13
+  shortColumn: 3
+  longColumn: 4
+  positionFactorX: .800000012
+  positionFactorY: 2.5999999
+  shortPositionOffset: 1.20000005
+  loopOffset: -1
+  Asylum: {fileID: 157694, guid: be58f21fbe08a6843a1b2a977610861a, type: 2}
+  City: {fileID: 111882, guid: d7083e702d87df84e8256186cededc36, type: 2}
+  caveHideout: {fileID: 119910, guid: 59b85d8a7a628124d9d95df1a6cf36ff, type: 2}
+  forestHideout: {fileID: 174594, guid: 1c8dd486cf8bd364ca17313c7921e96e, type: 2}
+  swampHideout: {fileID: 136892, guid: ae3e99355e5f84d429f8cc16b55c6677, type: 2}
+  Agriculture: {fileID: 168940, guid: cc1e7fb25978ee047b02f4dd82472964, type: 2}
+  Woodland: {fileID: 100276, guid: b89e085f83b56304bad6d0518e7232c0, type: 2}
+  Grassland: {fileID: 102348, guid: 023d1bbf3e7f3754483f5d3f6da24de0, type: 2}
+  Steppe: {fileID: 124712, guid: 769c2a0b7d8ce4b4598174bc5a37447c, type: 2}
+  Sea: {fileID: 155722, guid: 480cea65bccf84e4bbd05d276c7033fd, type: 2}
+  Mountain: {fileID: 103320, guid: 4a317885cca621a4e940549fddbcac1c, type: 2}
+  Desert: {fileID: 176446, guid: eb8398447c36be545af01e453d8b1c67, type: 2}
+--- !u!114 &11441548
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 114388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b4b3f74bb686184e89f849e5b9c0e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardScript: {fileID: 0}
+  level: 2
 --- !u!1001 &100100000
 Prefab:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 0}
+  m_RootGameObject: {fileID: 114388}
   m_IsPrefabParent: 1

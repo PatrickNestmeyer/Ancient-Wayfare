@@ -183,4 +183,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8b06bc6f449d24c8c44e3c85b35cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 170358, guid: 4d8cf93ba90c1be44a411915044b0e3e, type: 2}
+  gameManager: {fileID: 114388, guid: 4d8cf93ba90c1be44a411915044b0e3e, type: 2}
+  army: {fileID: 180186, guid: d0ebc39b91ee00c4d9f336adf4ed1fb4, type: 2}

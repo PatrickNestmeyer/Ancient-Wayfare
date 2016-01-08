@@ -26,15 +26,17 @@ public abstract class MovingObject : MonoBehaviour
         hit = Physics2D.Linecast(start, end, blockingLayer);
         boxCollider.enabled = true;
         
+        
         if(hit.transform == null)
         {
             StartCoroutine(SmoothMovement(end));
             return true;
-        }     
+        }
         
         return false;
     }
     
+    /*
     protected virtual void AttemptMove <T> (int xDir, int yDir) where T : Component
     {
         RaycastHit2D hit;
@@ -47,8 +49,18 @@ public abstract class MovingObject : MonoBehaviour
         
         if(!canMove && hitComponent != null)
             OnCantMove(hitComponent);
-    }
+    }*/
     
+    protected virtual void AttemptMove(int xDir, int yDir)
+    {
+        RaycastHit2D hit;
+        bool canMove = Move(xDir, yDir, out hit);
+        
+        if(hit.transform == null)
+            return;
+    }
+   
+   
     protected IEnumerator SmoothMovement (Vector3 end)
     {
         float sqrtRemainingDistance = (transform.position - end).sqrMagnitude;
