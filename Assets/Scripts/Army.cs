@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Army : MovingObject 
 {   
+    public float horizontalMovement = 1.0f;
+    public float verticalMovement = 1.0f;
     public CoordinateSystem cs;
     public static Army instance = null;
     private int gold;
@@ -11,6 +13,8 @@ public class Army : MovingObject
     private string equipment;
     private bool key;
     private int starvingFighters;
+    public int xPos;
+    public int yPos;
     
     private float restartLevelDelay = 1f;
     private Animator animator;
@@ -53,6 +57,8 @@ public class Army : MovingObject
         float spawnArmyX, spawnArmyY;
         spawnArmyX = cs.Positions[0][1].x;
         spawnArmyY = cs.Positions[0][1].y;
+        xPos = 0;
+        yPos = 1;
         this.transform.position += new Vector3(spawnArmyX, spawnArmyY, 0f);
         
         base.Start();
@@ -96,7 +102,7 @@ public class Army : MovingObject
         }
     }
 	
-    protected override void AttemptMove (int xDir, int yDir)
+    protected override void AttemptMove (float xDir, float yDir)
     {
        if(food > 0)
        {
@@ -107,17 +113,10 @@ public class Army : MovingObject
        }
         
        base.AttemptMove(xDir, yDir);
-        
-       RaycastHit2D hit;
+       
+       //RaycastHit2D hit;
         
        CheckIfGameOver();
-    }
-    
-    protected override void OnCantMove<T>(T component)
-    {
-        //Do not move
-        //animator.setTrigger("armyStart");
-        //animator.setTrigger("armyStop");
     }
     
     private void Restart()
@@ -127,19 +126,76 @@ public class Army : MovingObject
     
 	void Update () 
     {
-	    int horizontal = 0;
-        int vertical = 0;
-       
-        horizontal = (int) Input.GetAxisRaw("Horizontal");
-        vertical = (int) Input.GetAxisRaw("Vertical");
-       
-        if(vertical == 0 || (vertical != 0 && horizontal != 0))
+        //TODO: invert army direction if necessary
+        if(!movementInProgress)
         {
+            float horizontal = horizontalMovement;
+            float vertical = verticalMovement;
+            
+            //Up-Left Movement
+            if(Input.GetKeyUp("q") == true || Input.GetKeyUp("w") == true)
+            {
+                if(yPos == 0 || xPos == 0)
+                    return;
+                horizontal *= -1;
+            }
+            //Up-Right Movement
+            else if(Input.GetKeyUp("e") == true || Input.GetKeyUp("r") == true)
+            {
+                if(yPos == 0 || xPos == 12)
+                    return;
+            }
+            //Left Movement
+            else if(Input.GetKeyUp("a") == true || Input.GetKeyUp("s") == true)
+            {
+                if(xPos == 0)
+                    return;
+                vertical = 0;
+                horizontal *= -1;
+            }
+            //Right Movement
+            else if(Input.GetKeyUp("d") == true || Input.GetKeyUp("f") == true)
+            {
+                if(xPos == 12)
+                    return;
+                vertical = 0;
+            }
+            //Down-Left Movement
+            else if(Input.GetKeyUp("y") == true || Input.GetKeyUp("x") == true)
+            {
+                if((yPos % 2 == 0 && yPos == 2) || (yPos % 2 == 1 && yPos == 3) || xPos == 0)
+                    return;
+                vertical *= -1;
+                horizontal *= -1;
+            }
+            //Down-Right Movement
+            else if(Input.GetKeyUp("c") == true || Input.GetKeyUp("v") == true)
+            {
+                if((yPos % 2 == 0 && yPos == 2) || (yPos % 2 == 1 && yPos == 3) || xPos == 12)
+                    return;
+                vertical *= -1;
+            }
+            else
+            {
+                return;
+            }
+            animator.SetTrigger("army_Start");
             AttemptMove(horizontal, vertical);
-        }
-        else
-        {
+        //If already a movement is in progress the moving keys are will be blocked
+        }else{
             return;
         }
 	}
+    
+    protected override void OnMovementFinished()
+    {
+        base.OnMovementFinished();
+        animator.SetTrigger("armyStop");
+        
+        /* TODO:
+         * refresh xPos, yPos
+         * maybe set army direction forward and only invert if left movement
+         *
+         */
+    }
 }

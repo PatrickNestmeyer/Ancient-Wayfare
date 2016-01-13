@@ -2,8 +2,7 @@
 using System.Collections;
 
 public class GameManager : MonoBehaviour 
-{    
-    public float turnDelay = .5f;
+{
     public static GameManager instance = null;
 	public BoardManager boardScript;
     public int armyGold, armyFighters, armyFood;
