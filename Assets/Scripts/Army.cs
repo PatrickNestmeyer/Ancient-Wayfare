@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Army : MovingObject 
 {   
@@ -8,39 +9,22 @@ public class Army : MovingObject
     public float verticalMovement = 1.3f;
     public CoordinateSystem cs;
     public static Army instance = null;
-    private int gold;
-    private int fighters;
-    private int food;
-    private string equipment;
+    public int gold;
+    public int fighters;
+    public int food;
+    public string equipment = "light";
+    public Text levelTextGold;
+    public Text levelTextFighters;
+    public Text levelTextFood;
+    public Text levelTextEquipment;
+    
     private bool key;
-    private int starvingFighters;
+    private int starvingFighters = 5;
     public int xPos;
     public int yPos;
     private bool leftMovement = false;
-    
     private float restartLevelDelay = 1f;
     private Animator animator;
-    
-    public int Gold
-    {
-        get{ return gold;}
-        set{ gold = value;}
-    }
-    public int Fighters
-    {
-        get{ return fighters;}
-        set{ fighters = value;}
-    }
-    public int Food
-    {
-        get{ return food;}
-        set{ food = value;}
-    }
-    public string Equipment
-    {
-        get{ return equipment;}
-        set{ equipment = value;}
-    }
 
 	protected override void Start ()
     {
@@ -51,16 +35,26 @@ public class Army : MovingObject
         
         cs = CoordinateSystem.Instance;
         animator = GetComponent<Animator>();
-        food = GameManager.instance.armyFood;
-        gold = GameManager.instance.armyGold;
-        fighters = GameManager.instance.armyFighters;
-        equipment = GameManager.instance.armyEquipment;
+        
+        this.food = GameManager.instance.food;
+        this.gold = GameManager.instance.gold;
+        this.fighters = GameManager.instance.fighters;
+        this.equipment = GameManager.instance.equipment;
+        
+        levelTextFighters = GameObject.Find("Text_Fighters").GetComponent<Text>();
+        levelTextFood = GameObject.Find("Text_Food").GetComponent<Text>();
+        levelTextGold = GameObject.Find("Text_Gold").GetComponent<Text>();
+        levelTextEquipment = GameObject.Find("Text_Equipment").GetComponent<Text>();
+        
+        levelTextFighters.text = "Fighters: " + this.fighters;
+        levelTextFood.text = "Food: " + this.food;
+        levelTextGold.text = "Gold: " + this.gold;
+        levelTextEquipment.text = "Equipment: " + this.equipment;
         
         //army spawns in the middle of left row at x=0, y=1
         xPos = 0;
         yPos = 1;
-        transform.position += new Vector3(cs.Positions[0][1].x, cs.Positions[0][1].y, 0f);
-        //transform.Rotate(0, 180, 0);
+        transform.position = new Vector3(cs.Positions[xPos][yPos].x, cs.Positions[xPos][yPos].y, 0f);
         
         base.Start();
 	}
@@ -71,14 +65,16 @@ public class Army : MovingObject
         float Y = cs.Positions[positionArmyX][positionArmyY].y;
         transform.position = new Vector3(X,Y,0f);
     }
-    
+   
+   /* 
     private void OnDisable()
     {
-        GameManager.instance.armyFood = food;
-        GameManager.instance.armyGold = gold;
-        GameManager.instance.armyFighters = fighters;
-        GameManager.instance.armyEquipment = equipment;
+        GameManager.instance.food = this.food;
+        GameManager.instance.gold = this.gold;
+        GameManager.instance.fighters = this.fighters;
+        GameManager.instance.equipment = this.equipment;
     }
+    */
     
     private void CheckIfGameOver()
     {
@@ -90,18 +86,19 @@ public class Army : MovingObject
     {
         if(other.tag == "Asylum")
         {
-            
+            Debug.Log("Asylum");
         }
         if(other.tag == "City")
         {
-            
+            Debug.Log("City");
         }
         if(other.tag == "Cave" || other.tag == "Forest" || other.tag == "Swamp")
         {
-            
+            Debug.Log("Hideout");
         }
         if(other.tag == "Mountain" || other.tag == "Sea" || other.tag == "Desert")
         {
+            Debug.Log("Key");
             if(key == true)
             {
                 Invoke("Restart", restartLevelDelay);
@@ -119,6 +116,9 @@ public class Army : MovingObject
            food = 0;
            fighters -= starvingFighters;
        }
+       
+       levelTextFood.text = "Food: " + food;
+       levelTextFighters.text = "Fighters: " + fighters;
        
        base.AttemptMove(xDir, yDir);
        

@@ -14,7 +14,5 @@ public class LoadScript : MonoBehaviour
             Instantiate(gameManager);
         if(Army.instance == null)
             Instantiate(army);
-        
-        
 	}
 }

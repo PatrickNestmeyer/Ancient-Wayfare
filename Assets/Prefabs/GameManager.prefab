@@ -70,15 +70,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b4b3f74bb686184e89f849e5b9c0e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelStartDelay: 2
   boardScript: {fileID: 0}
-  level: 2
+  gold: 10
+  fighters: 10
+  food: 10
+  equipment: light
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: levelStartDelay
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 114388}

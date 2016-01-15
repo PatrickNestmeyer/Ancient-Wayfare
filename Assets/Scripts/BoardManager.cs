@@ -14,7 +14,6 @@ public class BoardManager : MonoBehaviour
 	public Level level = new Level();
     
     public CoordinateSystem cs;
-    
 	public GameObject Asylum;
 	public GameObject City;
 	public GameObject caveHideout;
