@@ -3,8 +3,9 @@ using System.Collections;
 
 public class Army : MovingObject 
 {   
-    public float horizontalMovement = 1.0f;
-    public float verticalMovement = 1.0f;
+    public float horizontalMovementLong = 1.6f;
+    public float horizontalMovementShort = 0.8f;
+    public float verticalMovement = 1.3f;
     public CoordinateSystem cs;
     public static Army instance = null;
     private int gold;
@@ -15,6 +16,7 @@ public class Army : MovingObject
     private int starvingFighters;
     public int xPos;
     public int yPos;
+    private bool leftMovement = false;
     
     private float restartLevelDelay = 1f;
     private Animator animator;
@@ -54,15 +56,21 @@ public class Army : MovingObject
         fighters = GameManager.instance.armyFighters;
         equipment = GameManager.instance.armyEquipment;
         
-        float spawnArmyX, spawnArmyY;
-        spawnArmyX = cs.Positions[0][1].x;
-        spawnArmyY = cs.Positions[0][1].y;
+        //army spawns in the middle of left row at x=0, y=1
         xPos = 0;
         yPos = 1;
-        this.transform.position += new Vector3(spawnArmyX, spawnArmyY, 0f);
+        transform.position += new Vector3(cs.Positions[0][1].x, cs.Positions[0][1].y, 0f);
+        //transform.Rotate(0, 180, 0);
         
         base.Start();
 	}
+    
+    private void repositionArmy( int positionArmyX, int positionArmyY)
+    {
+        float X = cs.Positions[positionArmyX][positionArmyY].x;
+        float Y = cs.Positions[positionArmyX][positionArmyY].y;
+        transform.position = new Vector3(X,Y,0f);
+    }
     
     private void OnDisable()
     {
@@ -111,11 +119,11 @@ public class Army : MovingObject
            food = 0;
            fighters -= starvingFighters;
        }
-        
+       
        base.AttemptMove(xDir, yDir);
        
        //RaycastHit2D hit;
-        
+       
        CheckIfGameOver();
     }
     
@@ -129,56 +137,86 @@ public class Army : MovingObject
         //TODO: invert army direction if necessary
         if(!movementInProgress)
         {
-            float horizontal = horizontalMovement;
-            float vertical = verticalMovement;
+            float horizontal;
+            float vertical;
             
             //Up-Left Movement
             if(Input.GetKeyUp("q") == true || Input.GetKeyUp("w") == true)
             {
-                if(yPos == 0 || xPos == 0)
+                //Not possible if in first(left) column or in last(upper) row
+                if(yPos == 3 || xPos == 0)
                     return;
-                horizontal *= -1;
+                if(xPos % 2 == 0)
+                    yPos++;
+                xPos--;
+                horizontal = horizontalMovementShort * -1;
+                vertical = verticalMovement;
+                leftMovement = true;
             }
             //Up-Right Movement
             else if(Input.GetKeyUp("e") == true || Input.GetKeyUp("r") == true)
             {
-                if(yPos == 0 || xPos == 12)
+                //Not possible if in last(right) column or in last(upper) row
+                if(yPos == 3 || xPos == 12)
                     return;
+                if(xPos % 2 == 0)
+                    yPos++;
+                xPos++;
+                horizontal = horizontalMovementShort;
+                vertical = verticalMovement;
             }
             //Left Movement
             else if(Input.GetKeyUp("a") == true || Input.GetKeyUp("s") == true)
             {
-                if(xPos == 0)
+                //Not possible if in first or second (left) column
+                if(xPos == 0 || xPos == 1)
                     return;
+                xPos-=2;
                 vertical = 0;
-                horizontal *= -1;
+                horizontal = horizontalMovementLong * -1;
+                leftMovement = true;
             }
             //Right Movement
             else if(Input.GetKeyUp("d") == true || Input.GetKeyUp("f") == true)
             {
-                if(xPos == 12)
+                //Not possible if in last or forelast (right) column
+                if(xPos == 11 || xPos == 12)
                     return;
+                xPos += 2;
                 vertical = 0;
+                horizontal = horizontalMovementLong;
             }
             //Down-Left Movement
             else if(Input.GetKeyUp("y") == true || Input.GetKeyUp("x") == true)
             {
-                if((yPos % 2 == 0 && yPos == 2) || (yPos % 2 == 1 && yPos == 3) || xPos == 0)
+                //Not possible if in first(left) column or last(down) row
+                if(xPos == 0 || (yPos == 0 && xPos % 2 == 1))
                     return;
-                vertical *= -1;
-                horizontal *= -1;
+                if(xPos % 2 == 1)
+                    yPos--;
+                xPos--;
+                horizontal = horizontalMovementShort * -1;
+                vertical = verticalMovement * -1;
+                leftMovement = true;
             }
             //Down-Right Movement
             else if(Input.GetKeyUp("c") == true || Input.GetKeyUp("v") == true)
             {
-                if((yPos % 2 == 0 && yPos == 2) || (yPos % 2 == 1 && yPos == 3) || xPos == 12)
+                //Not possible if in last(right) column or last(down) row
+                if(xPos == 12 || (yPos == 0 && xPos % 2 == 1))
                     return;
-                vertical *= -1;
+                if(xPos % 2 == 1)
+                    yPos--;
+                xPos++;
+                horizontal = horizontalMovementShort;
+                vertical = verticalMovement * -1;
             }
             else
             {
                 return;
             }
+            if(leftMovement)
+                transform.Rotate(0,180,0);
             animator.SetTrigger("army_Start");
             AttemptMove(horizontal, vertical);
         //If already a movement is in progress the moving keys are will be blocked
@@ -191,11 +229,13 @@ public class Army : MovingObject
     {
         base.OnMovementFinished();
         animator.SetTrigger("armyStop");
-        
-        /* TODO:
-         * refresh xPos, yPos
-         * maybe set army direction forward and only invert if left movement
-         *
-         */
+        if(leftMovement)
+        {
+            transform.Rotate(0,180,0);
+            leftMovement = false;
+        }
+        transform.position = new Vector3(cs.Positions[xPos][yPos].x, cs.Positions[xPos][yPos].y, 0f);
+        //reposition Army to avoid position deviation after several turns
+        repositionArmy(xPos, yPos);
     }
 }

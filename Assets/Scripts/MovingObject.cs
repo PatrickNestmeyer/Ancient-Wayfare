@@ -14,7 +14,7 @@ public abstract class MovingObject : MonoBehaviour
        rb2D = GetComponent<Rigidbody2D>();
 	}
 	
-        protected virtual void AttemptMove(float xDir, float yDir)
+    protected virtual void AttemptMove(float xDir, float yDir)
     {
         movementInProgress = true;
         RaycastHit2D hit;
@@ -49,7 +49,7 @@ public abstract class MovingObject : MonoBehaviour
         float sqrtRemainingDistance = (transform.position - end).sqrMagnitude;
         while(sqrtRemainingDistance > float.Epsilon)
         {
-            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, (Time.fixedDeltaTime));
+            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, Time.fixedDeltaTime);
             rb2D.MovePosition(newPosition);
             sqrtRemainingDistance = (transform.position - end).sqrMagnitude;
             yield return null;
