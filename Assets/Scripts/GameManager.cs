@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour 
 {
-    
     public static GameManager instance;
 	public BoardManager boardScript;
     public Userinteraface UI;
@@ -25,10 +24,8 @@ public class GameManager : MonoBehaviour
         level = Level.Instance;
         GS = GlobalSettings.Instance;
         currentLevel = GS.startingLevel;
-        
-        resources = new Resources(GS.startingEquipment, GS.startingGold, GS.startingFighters, GS.startingFood);
-        
         UI = Userinteraface.Instance;
+        resources = Resources.Instance;
         
         DontDestroyOnLoad(gameObject);
 		boardScript = GetComponent<BoardManager>();
@@ -45,55 +42,30 @@ public class GameManager : MonoBehaviour
 	{
         doingSetup = true;
         
+        UI.RemoveText();
+        UI.DisableButtons();
+        
         level.createLevel(currentLevel);
         
         InitGuiElements();
         
-        Invoke("StartLevel", GS.levelStartDelay);
+        //Invoke("StartLevel", GS.levelStartDelay);
         
 		boardScript.SetupScene(currentLevel);
 	}
     
     private void StartLevel()
     {
-        
-        UI.backGroundImage.SetActive(false);
-        UI.centerText.text = "";
-        UI.headText.text = "";
-        doingSetup = false;
+        UI.DisableButtons();
+        UI.RemoveText();
     }
     
     private void InitGuiElements()
     {
-        //should take place in Level.cs
-        string setting = "";
-        switch(currentLevel)
-        {
-            case 1:
-                setting = "Greece - fertile valley near Athens";
-                break;
-            case 2:
-                setting = "Egypt - Nile River Delta";
-                break;
-            case 3:
-                setting = "Phoenicia - dry and rolling landscape";
-                break;
-            case 4: 
-                setting = "Mesopotamia - Euphrates";
-                break;
-        }
         UI.backGroundImage.SetActive(true);
-        UI.centerButton.SetActive(false);
-        UI.leftButton.SetActive(false);
-        UI.rightButton.SetActive(false);
-        UI.centerText.text = setting;
+        UI.bottomButton.SetActive(true);
+        UI.centerText.text = level.LevelAnnouncement;
         UI.headText.text = "Level " + currentLevel.ToString();
-        UI.equipmentText.text = "";
-        UI.goldText.text = "";
-        UI.fightersText.text = "";
-        UI.foodText.text = "";
-        UI.yourFightersText.text = "";
-        UI.enemyFightersText.text = "";
     }
     
     public void GameOver()

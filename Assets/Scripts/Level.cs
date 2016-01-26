@@ -20,7 +20,8 @@ public class Level
         fields = new string[GS.boardLength];
     }
 	
-    public string Equipment;
+    public string UnlockableEquipment;
+    public int EquipmentUnlockCosts;
     public string LevelAnnouncement;
     public string CityAnnouncement;
     public string AsylumAnnouncement;
@@ -28,7 +29,7 @@ public class Level
     public int MaxEnemies;
     public int MinEnemies;
     public string KeyFreeText;
-    public string DefeatEnemyReward;
+    public int DefeatEnemyReward;
     public int FoodCosts;
     public int FighterCosts;
 	public string[] fields;
@@ -66,6 +67,8 @@ public class Level
 	
 	public void createLevel(int level)
 	{
+        FoodCosts = 1;
+        FighterCosts = 2;
 		switch (level)
 		{
 			case 1: 
@@ -86,6 +89,16 @@ public class Level
 	
 	private void LevelOneFieldSetup()
 	{
+        UnlockableEquipment = "medium";
+        EquipmentUnlockCosts = 25;
+        LevelAnnouncement = "Greece - fertile valley near Athens";
+        CityAnnouncement = "A nearby fortified city allows you to refresh. You can buy javelins for your Army.";
+        AsylumDonation = 20;
+        AsylumAnnouncement = "Near where you started an asylum supplies you with " + AsylumDonation + " Food";
+        MaxEnemies = 7;
+        MinEnemies = 3;
+        KeyFreeText = "Chained to a tree your fighters find a  boatbuilder. Maybe he can help us to cross the Mediterranean?";
+        DefeatEnemyReward = 15;
 		hideoutType = "frs";
 		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
         cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
@@ -107,6 +120,16 @@ public class Level
 	
 	private void LevelTwoFieldSetup()
 	{	
+        UnlockableEquipment = "heavy";
+        EquipmentUnlockCosts = 25;
+        LevelAnnouncement = "Egypt - Nile River Delta";
+        CityAnnouncement = "A nearby fortified city allows you to refresh. You can buy wooden shields for your Army.";
+        AsylumDonation = 25;
+        AsylumAnnouncement = "Near where you arrived an asylum supplies you with " + AsylumDonation + " Food";
+        MaxEnemies = 10;
+        MinEnemies = 6;
+        KeyFreeText = "After you slaughtered the hideout near country folks wants to join your journey. They know the way through the mountains.";
+        DefeatEnemyReward = 20;
 		hideoutType = "swp";
 		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
 		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
@@ -133,6 +156,16 @@ public class Level
 	
 	private void LevelThreeFieldSetup()
 	{
+        UnlockableEquipment = "superior";
+        EquipmentUnlockCosts = 25;
+        LevelAnnouncement = "Phoenicia - dry and rolling landscape";
+        CityAnnouncement = "A nearby fortified city allows you to refresh. You can buy horses for your Army.";
+        AsylumDonation = 25;
+        AsylumAnnouncement = "Near where you arrived an asylum supplies you with " + AsylumDonation + " Food";
+        MaxEnemies = 15;
+        MinEnemies = 10;
+        KeyFreeText = "Close to where you defeated your enemy some camels stand around. We can use them to cross the desert.";
+        DefeatEnemyReward = 25;
 		hideoutType = "cve";
 		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
 		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
@@ -148,6 +181,16 @@ public class Level
 	
 	private void LevelFourFieldSetup()
 	{
+        UnlockableEquipment = "No Equipment available";
+        EquipmentUnlockCosts = 25;
+        LevelAnnouncement = "Mesopotamia - Euphrates";
+        CityAnnouncement = "A nearby fortified city allows you to refresh. The locals warn you not to get close to the mountains. There will be a behemoth";
+        AsylumDonation = 30;
+        AsylumAnnouncement = "Near where you arrived an asylum supplies you with " + AsylumDonation + " Food";
+        MaxEnemies = 20;
+        MinEnemies = 15;
+        KeyFreeText = "";
+        DefeatEnemyReward = 30;
 		hideoutType = "frs";
 		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
 		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);

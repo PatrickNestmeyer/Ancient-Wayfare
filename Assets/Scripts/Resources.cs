@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Resources 
 {
+    private static Resources instance;
     private string equipment;
     private int gold;
     private int fighters;
@@ -10,6 +11,18 @@ public class Resources
     private float attackFactor;
     private float defenseFactor;
     private GlobalSettings GS;
+    
+    public static Resources Instance
+    {
+        get
+        {
+            if(instance == null)
+            {
+                instance = new Resources();
+            }
+            return instance;
+        }
+    }
     
     public string Equipment
     {
@@ -66,12 +79,12 @@ public class Resources
         }
     }
     
-    public Resources(string equipment, int gold, int fighters, int food)
+    public Resources()
     {
         GS = GlobalSettings.Instance;
-        setEquipment(equipment);
-        this.gold = gold;
-        this.fighters = fighters;
-        this.food = food;
+        setEquipment(GS.startingEquipment);
+        gold = GS.startingGold;
+        fighters = GS.startingFighters;
+        food = GS.startingFood;
     }
 }

@@ -18,6 +18,7 @@ public class Userinteraface {
     public GameObject centerButton;
     public GameObject leftButton;
     public GameObject rightButton;
+    public GameObject bottomButton;
     
     private Userinteraface()
     {
@@ -25,6 +26,7 @@ public class Userinteraface {
         centerButton = GameObject.Find("centerButton");
         leftButton = GameObject.Find("leftButton");
         rightButton = GameObject.Find("rightButton");
+        bottomButton = GameObject.Find("bottomButton");
         centerText = GameObject.Find("centerText").GetComponent<Text>();
         headText = GameObject.Find("headText").GetComponent<Text>();
         equipmentText = GameObject.Find("equipmentText").GetComponent<Text>();
@@ -43,5 +45,24 @@ public class Userinteraface {
                 instance = new Userinteraface();
             return instance;
         }
+    }
+    
+    public void RemoveText()
+    {
+        headText.text = "";
+        centerText.text = "";
+        yourFightersText.text = "";
+        enemyFightersText.text = "";
+    }
+    
+    public void DisableButtons()
+    {
+        centerButton.GetComponentInChildren<Text>().text = "";
+        leftButton.GetComponentInChildren<Text>().text = "";
+        rightButton.GetComponentInChildren<Text>().text = "";
+        centerButton.SetActive(false);
+        leftButton.SetActive(false);
+        rightButton.SetActive(false);
+        bottomButton.SetActive(false);
     }
 }
