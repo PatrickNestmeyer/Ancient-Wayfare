@@ -4,16 +4,6 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour 
 {    
-	public int rows = 13;
-	public int shortColumn = 3;
-	public int longColumn = 4;
-	public float positionFactorX = 0.8f;
-	public float positionFactorY = 2.6f;
-	public float shortPositionOffset = 1.2f;
-	public int loopOffset = -1;
-	public Level level = new Level();
-    
-    public CoordinateSystem cs;
 	public GameObject Asylum;
 	public GameObject City;
 	public GameObject caveHideout;
@@ -28,7 +18,10 @@ public class BoardManager : MonoBehaviour
 	public GameObject Desert;
 	
 	private Transform boardHolder;
-	
+	private CoordinateSystem cs;
+    private GlobalSettings GS;
+    private Level level;
+    
 	private void BoardSetup()
 	{	
 		int columns;
@@ -41,19 +34,19 @@ public class BoardManager : MonoBehaviour
 		
 		boardHolder = new GameObject ("Board").transform;
 		
-		for(int x = loopOffset; x < (rows + loopOffset); x++)
+		for(int x = GS.loopOffset; x < (GS.rows + GS.loopOffset); x++)
 		{
-			columns = (isShortRow) ? shortColumn : longColumn;
-			for(int y = loopOffset; y < (columns + loopOffset); y++)
+			columns = (isShortRow) ? GS.shortColumn : GS.longColumn;
+			for(int y = GS.loopOffset; y < (columns + GS.loopOffset); y++)
 			{
 				GameObject toInstantiate = null;
 				
-				X_Position = Convert.ToSingle(x) * positionFactorX;
-				Y_Position = Convert.ToSingle(y) * positionFactorY;
+				X_Position = Convert.ToSingle(x) * GS.positionFactorX;
+				Y_Position = Convert.ToSingle(y) * GS.positionFactorY;
 				if(isShortRow)
-					Y_Position += shortPositionOffset;
+					Y_Position += GS.shortPositionOffset;
 				
-				cs.Positions[x - loopOffset].Add(new Vector3(X_Position, Y_Position, 0f));
+				cs.Positions[x - GS.loopOffset].Add(new Vector3(X_Position, Y_Position, 0f));
 				switch (level[level.Index])
 				{
 					case "gl":
@@ -112,10 +105,11 @@ public class BoardManager : MonoBehaviour
 	   instance.transform.SetParent(boardHolder);
     }
 
-	public void SetupScene(int level)
+	public void SetupScene(int currentLevel)
 	{
+        level = Level.Instance;
         cs = CoordinateSystem.Instance;
-		this.level.createLevel(level);
+        GS = GlobalSettings.Instance;
 		BoardSetup();
 		PlacesSetup();
 	}

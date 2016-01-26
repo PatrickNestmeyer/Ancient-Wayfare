@@ -4,27 +4,21 @@ using UnityEngine.UI;
 
 public class Army : MovingObject 
 {   
-    public float horizontalMovementLong = 1.6f;
-    public float horizontalMovementShort = 0.8f;
-    public float verticalMovement = 1.3f;
     public CoordinateSystem cs;
     public static Army instance = null;
-    public int gold;
-    public int fighters;
-    public int food;
-    public string equipment = "light";
     public Text levelTextGold;
     public Text levelTextFighters;
     public Text levelTextFood;
     public Text levelTextEquipment;
     
+    private GlobalSettings GS;
+    private Userinteraface UI;
+    private Resources resources;
     private bool key;
-    private int starvingFighters = 5;
-    public int xPos;
-    public int yPos;
+    public Position position;
     private bool leftMovement = false;
-    private float restartLevelDelay = 1f;
     private Animator animator;
+    private string lastPlace;
 
 	protected override void Start ()
     {
@@ -33,28 +27,20 @@ public class Army : MovingObject
         else if(instance != this)
             Destroy(gameObject);
         
+        resources = GameManager.instance.resources;
+        GS = GlobalSettings.Instance;
+        UI = Userinteraface.Instance;
         cs = CoordinateSystem.Instance;
         animator = GetComponent<Animator>();
         
-        this.food = GameManager.instance.food;
-        this.gold = GameManager.instance.gold;
-        this.fighters = GameManager.instance.fighters;
-        this.equipment = GameManager.instance.equipment;
-        
-        levelTextFighters = GameObject.Find("Text_Fighters").GetComponent<Text>();
-        levelTextFood = GameObject.Find("Text_Food").GetComponent<Text>();
-        levelTextGold = GameObject.Find("Text_Gold").GetComponent<Text>();
-        levelTextEquipment = GameObject.Find("Text_Equipment").GetComponent<Text>();
-        
-        levelTextFighters.text = "Fighters: " + this.fighters;
-        levelTextFood.text = "Food: " + this.food;
-        levelTextGold.text = "Gold: " + this.gold;
-        levelTextEquipment.text = "Equipment: " + this.equipment;
+        UI.fightersText.text = "Fighters: " + resources.Fighters;
+        UI.foodText.text = "Food: " + resources.Food;
+        UI.goldText.text = "Gold: " + resources.Gold;
+        UI.equipmentText.text = "Equipment: " + resources.Equipment;
         
         //army spawns in the middle of left row at x=0, y=1
-        xPos = 0;
-        yPos = 1;
-        transform.position = new Vector3(cs.Positions[xPos][yPos].x, cs.Positions[xPos][yPos].y, 0f);
+        position = new Position(0, 1);
+        transform.position = new Vector3(cs.Positions[position.Row][position.Column].x, cs.Positions[position.Row][position.Column].y, 0f);
         
         base.Start();
 	}
@@ -78,7 +64,7 @@ public class Army : MovingObject
     
     private void CheckIfGameOver()
     {
-       if(fighters <= 0)
+       if(resources.Fighters <= 0)
         GameManager.instance.GameOver();
     }
     
@@ -101,7 +87,7 @@ public class Army : MovingObject
             Debug.Log("Key");
             if(key == true)
             {
-                Invoke("Restart", restartLevelDelay);
+                Invoke("Restart", GS.restartLevelDelay);
                 enabled = false;
             }
         }
@@ -109,20 +95,18 @@ public class Army : MovingObject
 	
     protected override void AttemptMove (float xDir, float yDir)
     {
-       if(food > 0)
+       if(resources.Food > 0)
        {
-           food -= fighters;
+           resources.Food -= resources.Fighters;
        }else{
-           food = 0;
-           fighters -= starvingFighters;
+           resources.Food = 0;
+           resources.Fighters -= GS.starvingFighters;
        }
        
-       levelTextFood.text = "Food: " + food;
-       levelTextFighters.text = "Fighters: " + fighters;
+       UI.foodText.text = "Food: " + resources.Food;
+       UI.fightersText.text = "Fighters: " + resources.Fighters;
        
        base.AttemptMove(xDir, yDir);
-       
-       //RaycastHit2D hit;
        
        CheckIfGameOver();
     }
@@ -134,7 +118,6 @@ public class Army : MovingObject
     
 	void Update () 
     {
-        //TODO: invert army direction if necessary
         if(!movementInProgress)
         {
             float horizontal;
@@ -144,72 +127,72 @@ public class Army : MovingObject
             if(Input.GetKeyUp("q") == true || Input.GetKeyUp("w") == true)
             {
                 //Not possible if in first(left) column or in last(upper) row
-                if(yPos == 3 || xPos == 0)
+                if(position.Column == 3 || position.Row == 0)
                     return;
-                if(xPos % 2 == 0)
-                    yPos++;
-                xPos--;
-                horizontal = horizontalMovementShort * -1;
-                vertical = verticalMovement;
+                if(position.Row % 2 == 0)
+                    position.Column++;
+                position.Row--;
+                horizontal = GS.horizontalMovementShort * -1;
+                vertical = GS.verticalMovement;
                 leftMovement = true;
             }
             //Up-Right Movement
             else if(Input.GetKeyUp("e") == true || Input.GetKeyUp("r") == true)
             {
                 //Not possible if in last(right) column or in last(upper) row
-                if(yPos == 3 || xPos == 12)
+                if(position.Column == 3 || position.Row == 12)
                     return;
-                if(xPos % 2 == 0)
-                    yPos++;
-                xPos++;
-                horizontal = horizontalMovementShort;
-                vertical = verticalMovement;
+                if(position.Row % 2 == 0)
+                    position.Column++;
+                position.Row++;
+                horizontal = GS.horizontalMovementShort;
+                vertical = GS.verticalMovement;
             }
             //Left Movement
             else if(Input.GetKeyUp("a") == true || Input.GetKeyUp("s") == true)
             {
                 //Not possible if in first or second (left) column
-                if(xPos == 0 || xPos == 1)
+                if(position.Row == 0 || position.Row == 1)
                     return;
-                xPos-=2;
+                position.Row-=2;
                 vertical = 0;
-                horizontal = horizontalMovementLong * -1;
+                horizontal = GS.horizontalMovementLong * -1;
                 leftMovement = true;
             }
             //Right Movement
             else if(Input.GetKeyUp("d") == true || Input.GetKeyUp("f") == true)
             {
                 //Not possible if in last or forelast (right) column
-                if(xPos == 11 || xPos == 12)
+                if(position.Row == 11 || position.Row == 12)
                     return;
-                xPos += 2;
+                position.Row += 2;
                 vertical = 0;
-                horizontal = horizontalMovementLong;
+                horizontal = GS.horizontalMovementLong;
             }
             //Down-Left Movement
             else if(Input.GetKeyUp("y") == true || Input.GetKeyUp("x") == true)
             {
                 //Not possible if in first(left) column or last(down) row
-                if(xPos == 0 || (yPos == 0 && xPos % 2 == 1))
+                if(position.Row == 0 || (position.Column == 0 && position.Row % 2 == 1))
                     return;
-                if(xPos % 2 == 1)
-                    yPos--;
-                xPos--;
-                horizontal = horizontalMovementShort * -1;
-                vertical = verticalMovement * -1;
+                if(position.Row % 2 == 1)
+                    position.Column--;
+                position.Row--;
+                horizontal = GS.horizontalMovementShort * -1;
+                vertical = GS.verticalMovement * -1;
                 leftMovement = true;
             }
             //Down-Right Movement
             else if(Input.GetKeyUp("c") == true || Input.GetKeyUp("v") == true)
             {
                 //Not possible if in last(right) column or last(down) row
-                if(xPos == 12 || (yPos == 0 && xPos % 2 == 1))
+                if(position.Row == 12 || (position.Column == 0 && position.Row % 2 == 1))
                     return;
-                if(xPos % 2 == 1)
-                    yPos--;
-                xPos++;
-                horizontal = horizontalMovementShort;
-                vertical = verticalMovement * -1;
+                if(position.Row % 2 == 1)
+                    position.Column--;
+                position.Row++;
+                horizontal = GS.horizontalMovementShort;
+                vertical = GS.verticalMovement * -1;
             }
             else
             {
@@ -234,8 +217,8 @@ public class Army : MovingObject
             transform.Rotate(0,180,0);
             leftMovement = false;
         }
-        transform.position = new Vector3(cs.Positions[xPos][yPos].x, cs.Positions[xPos][yPos].y, 0f);
+        transform.position = new Vector3(cs.Positions[position.Row][position.Column].x, cs.Positions[position.Row][position.Column].y, 0f);
         //reposition Army to avoid position deviation after several turns
-        repositionArmy(xPos, yPos);
+        repositionArmy(position.Row, position.Column);
     }
 }

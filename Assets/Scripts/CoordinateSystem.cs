@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class CoordinateSystem
 {    
-    public static CoordinateSystem instance;
+    private static CoordinateSystem instance;
     
     private CoordinateSystem() 
     {

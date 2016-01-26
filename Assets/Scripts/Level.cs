@@ -3,23 +3,45 @@ using System.Collections;
 using Random = UnityEngine.Random;
 public class Level
 {
-	//Sum of all fields
-	public int boardLength = 45;
-	//Walkable Fields
-	public int groundLength = 38;
-	//Fields only walkable with key
-	public int keyGroundLength = 7;
-	//transient fields before or after a keyground
-	public int transientFieldsLength = 7;
+    private static Level instance;
+    public static Level Instance
+    {
+        get
+        {
+            if(instance == null)
+                instance = new Level();
+            return instance;
+        }
+    }
+    
+    private Level()
+    {    
+        GS = GlobalSettings.Instance;
+        fields = new string[GS.boardLength];
+    }
 	
-	public string[] fields = new string[45];
-	
+    public string Equipment;
+    public string LevelAnnouncement;
+    public string CityAnnouncement;
+    public string AsylumAnnouncement;
+    public int AsylumDonation;
+    public int MaxEnemies;
+    public int MinEnemies;
+    public string KeyFreeText;
+    public string DefeatEnemyReward;
+    public int FoodCosts;
+    public int FighterCosts;
+	public string[] fields;
 	public string hideoutType;
 	public Position[] hideoutPositions;
 	public Position cityPosition;
 	public Position asylumPosition;
 	
-	//Indexer for fields
+	private int rnd;
+	private int index = 0;
+    private GlobalSettings GS;
+    
+    //Indexer for fields
 	public string this[int number]
 	{
 		get
@@ -41,9 +63,6 @@ public class Level
 		get{ return index; }
 		set{ index = value; }		
 	}
-	
-	private int rnd;
-	private int index = 0;
 	
 	public void createLevel(int level)
 	{
@@ -68,12 +87,12 @@ public class Level
 	private void LevelOneFieldSetup()
 	{
 		hideoutType = "frs";
-		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
-		cityPosition = new Position(6, 1);
-		asylumPosition = new Position(3, 1);
+		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
+        cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
+		asylumPosition = new Position(GS.asylumPositionXPos, GS.asylumPositionYPos);
 		
 		//fill ground
-		for(int i = 0; i < groundLength; i++)
+		for(int i = 0; i < GS.groundLength; i++)
 		{
 			//level 1 - greece - consists of grassland, agriculture and woodland ( 1 - 1 - 1)
 			rnd = Random.Range(0,3);
@@ -89,12 +108,12 @@ public class Level
 	private void LevelTwoFieldSetup()
 	{	
 		hideoutType = "swp";
-		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
-		cityPosition = new Position(6, 1);
-		asylumPosition = new Position(3, 1);
+		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
+		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
+		asylumPosition = new Position(GS.asylumPositionXPos, GS.asylumPositionYPos);
 		
 		//fill ground till transientFields
-		for(int i = 0; i < (groundLength - transientFieldsLength); i++)
+		for(int i = 0; i < (GS.groundLength - GS.transientFieldsLength); i++)
 		{
 			//level 2 - egypt - consists of grassland, agriculture and woodland till transientFields ( 3 - 2 - 1)
 			rnd = Random.Range(0,6);
@@ -106,7 +125,7 @@ public class Level
 				fields[i] = "wl";
 		}
 		//fill ground from transientFields till keyGround with steppe
-		for(int i = (groundLength - transientFieldsLength); i < groundLength; i++)
+		for(int i = (GS.groundLength - GS.transientFieldsLength); i < GS.groundLength; i++)
 		{
 			fields[i] = "sp";
 		}
@@ -115,12 +134,12 @@ public class Level
 	private void LevelThreeFieldSetup()
 	{
 		hideoutType = "cve";
-		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
-		cityPosition = new Position(6, 1);
-		asylumPosition = new Position(3, 1);
+		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
+		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
+		asylumPosition = new Position(GS.asylumPositionXPos, GS.asylumPositionYPos);
 		
 		//fill ground
-		for(int i = 0; i < groundLength; i++)
+		for(int i = 0; i < GS.groundLength; i++)
 		{
 			//level 3 - phenicia - consists of steppe only
 			fields[i] = "sp";
@@ -130,15 +149,15 @@ public class Level
 	private void LevelFourFieldSetup()
 	{
 		hideoutType = "frs";
-		hideoutPositions = new Position[] { (new Position(6,0)), (new Position(4,2)), (new Position(10,2)) };
-		cityPosition = new Position(6, 1);
-		asylumPosition = new Position(3, 1);
+		hideoutPositions = new Position[] { (new Position(GS.hideout1XPos, GS.hideout1YPos)), (new Position(GS.hideout2XPos, GS.hideout2YPos)), (new Position(GS.hideout3XPos, GS.hideout3YPos)) };
+		cityPosition = new Position(GS.cityPositionXPos, GS.cityPositionYPos);
+		asylumPosition = new Position(GS.asylumPositionXPos, GS.asylumPositionYPos);
 		
-		for(int i = 0; i < transientFieldsLength; i++)
+		for(int i = 0; i < GS.transientFieldsLength; i++)
 		{
 			fields[i] = "sp";
 		}
-		for(int i = transientFieldsLength; i < groundLength; i++)
+		for(int i = GS.transientFieldsLength; i < GS.groundLength; i++)
 		{
 			//level 4 - mesopotamia - consists of grassland, agriculture and woodland till transientFields ( 3 - 2 - 1)
 			rnd = Random.Range(0,6);
@@ -153,7 +172,7 @@ public class Level
 	
 	private void keyFieldSetup(int level)
 	{
-		for(int i = groundLength; i < boardLength; i++)
+		for(int i = GS.groundLength; i < GS.boardLength; i++)
 		{
 			switch(level)
 			{

@@ -4,18 +4,16 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour 
 {
-    public float levelStartDelay = 2f;
-    public static GameManager instance = null;
-	public BoardManager boardScript;
-    public int gold;
-    public int fighters;
-    public int food;
-    public string equipment = "light";
     
-    private Text levelText;
-    private GameObject levelImage;
-	private int level = 1;
+    public static GameManager instance;
+	public BoardManager boardScript;
+    public Userinteraface UI;
+    public Resources resources;
+    
+    private Level level;
+	private int currentLevel;
     private bool doingSetup;
+    private GlobalSettings GS;
     
 	void Start ()
     {
@@ -23,11 +21,14 @@ public class GameManager : MonoBehaviour
             instance = this;
         else if(instance != this)
             Destroy(gameObject);
+            
+        level = Level.Instance;
+        GS = GlobalSettings.Instance;
+        currentLevel = GS.startingLevel;
         
-        fighters = 10;
-        gold = 10;
-        food = 50;
-        equipment = "light";
+        resources = new Resources(GS.startingEquipment, GS.startingGold, GS.startingFighters, GS.startingFood);
+        
+        UI = Userinteraface.Instance;
         
         DontDestroyOnLoad(gameObject);
 		boardScript = GetComponent<BoardManager>();
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour
     
     private void OnLevelWasLoaded(int index)
     {
-        level++;
+        currentLevel++;
         InitGame();
     }
 	
@@ -44,9 +45,29 @@ public class GameManager : MonoBehaviour
 	{
         doingSetup = true;
         
+        level.createLevel(currentLevel);
+        
+        InitGuiElements();
+        
+        Invoke("StartLevel", GS.levelStartDelay);
+        
+		boardScript.SetupScene(currentLevel);
+	}
+    
+    private void StartLevel()
+    {
+        
+        UI.backGroundImage.SetActive(false);
+        UI.centerText.text = "";
+        UI.headText.text = "";
+        doingSetup = false;
+    }
+    
+    private void InitGuiElements()
+    {
         //should take place in Level.cs
         string setting = "";
-        switch(level)
+        switch(currentLevel)
         {
             case 1:
                 setting = "Greece - fertile valley near Athens";
@@ -61,30 +82,28 @@ public class GameManager : MonoBehaviour
                 setting = "Mesopotamia - Euphrates";
                 break;
         }
-        
-        levelImage = GameObject.Find("LevelImage");
-        levelText = GameObject.Find("LevelText").GetComponent<Text>();
-        levelText.text = setting;
-        levelImage.SetActive(true);
-        Invoke("HideLevelImage", levelStartDelay);
-        
-		boardScript.SetupScene(level);
-	}
-    
-    private void HideLevelImage()
-    {
-        levelImage.SetActive(false);
-        doingSetup = false;
+        UI.backGroundImage.SetActive(true);
+        UI.centerButton.SetActive(false);
+        UI.leftButton.SetActive(false);
+        UI.rightButton.SetActive(false);
+        UI.centerText.text = setting;
+        UI.headText.text = "Level " + currentLevel.ToString();
+        UI.equipmentText.text = "";
+        UI.goldText.text = "";
+        UI.fightersText.text = "";
+        UI.foodText.text = "";
+        UI.yourFightersText.text = "";
+        UI.enemyFightersText.text = "";
     }
     
     public void GameOver()
     {
-        levelText.text = "You were not strong enough!";
-        levelImage.SetActive(true);
+        UI.centerText.text = "You were not strong enough!";
+        UI.backGroundImage.SetActive(true);
         enabled = false;
     }
 	
-	void Update () 
+	void Update ()
     {
         //if(doingSetup)
 	}
