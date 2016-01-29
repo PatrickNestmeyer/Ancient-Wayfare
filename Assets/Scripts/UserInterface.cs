@@ -6,6 +6,7 @@ public class Userinteraface {
 
     private static Userinteraface instance;
     
+    public GameObject uiCanvas;
     public GameObject backGroundImage;
     public Text headText;
     public Text centerText;
@@ -20,21 +21,25 @@ public class Userinteraface {
     public GameObject rightButton;
     public GameObject bottomButton;
     
-    private Userinteraface()
+    public Userinteraface()
     {
-        backGroundImage = GameObject.Find("BackgroundImage");
-        centerButton = GameObject.Find("centerButton");
-        leftButton = GameObject.Find("leftButton");
-        rightButton = GameObject.Find("rightButton");
-        bottomButton = GameObject.Find("bottomButton");
-        centerText = GameObject.Find("centerText").GetComponent<Text>();
-        headText = GameObject.Find("headText").GetComponent<Text>();
-        equipmentText = GameObject.Find("equipmentText").GetComponent<Text>();
-        goldText = GameObject.Find("goldText").GetComponent<Text>();
-        fightersText = GameObject.Find("fightersText").GetComponent<Text>();
-        foodText = GameObject.Find("foodText").GetComponent<Text>();
-        yourFightersText = GameObject.Find("yourFightersText").GetComponent<Text>();
-        enemyFightersText = GameObject.Find("enemyFightersText").GetComponent<Text>();    
+        
+       backGroundImage = GameObject.Find("BackgroundImage");
+       centerButton = GameObject.Find("centerButton");
+       leftButton = GameObject.Find("leftButton");
+       rightButton = GameObject.Find("rightButton");
+       bottomButton = GameObject.Find("bottomButton");
+       centerText = GameObject.Find("centerText").GetComponent<Text>();
+       headText = GameObject.Find("headText").GetComponent<Text>();
+       equipmentText = GameObject.Find("equipmentText").GetComponent<Text>();
+       goldText = GameObject.Find("goldText").GetComponent<Text>();
+       fightersText = GameObject.Find("fightersText").GetComponent<Text>();
+       foodText = GameObject.Find("foodText").GetComponent<Text>();
+       yourFightersText = GameObject.Find("yourFightersText").GetComponent<Text>();
+       enemyFightersText = GameObject.Find("enemyFightersText").GetComponent<Text>();
+       
+       uiCanvas = GameObject.Find("uiCanvas");
+       UnityEngine.MonoBehaviour.DontDestroyOnLoad(uiCanvas);
     }
     
     public static Userinteraface Instance

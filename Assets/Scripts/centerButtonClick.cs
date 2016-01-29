@@ -26,6 +26,8 @@ public class centerButtonClick : MonoBehaviour
             {
                 resources.Gold -= level.EquipmentUnlockCosts;
                 resources.setEquipment(level.UnlockableEquipment);
+                UI.goldText.text = "Gold: " + resources.Gold;
+                UI.equipmentText.text = "Food: " + resources.Equipment;
             }
         }
     }

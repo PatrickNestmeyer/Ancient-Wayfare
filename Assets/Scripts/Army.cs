@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class Army : MovingObject 
 {   
     public CoordinateSystem cs;
     public static Army instance = null;
-    public Text levelTextGold;
-    public Text levelTextFighters;
-    public Text levelTextFood;
-    public Text levelTextEquipment;
     
+    public bool isInLocation = false;
+    public int enemies;
+    private Level level;    
     private GlobalSettings GS;
     private Userinteraface UI;
     private Resources resources;
-    private bool key;
     public Position position;
+    private Position previousPosition;
     private bool leftMovement = false;
     private Animator animator;
     private string lastPlace;
@@ -27,6 +28,7 @@ public class Army : MovingObject
         else if(instance != this)
             Destroy(gameObject);
         
+        level = Level.Instance;
         resources = GameManager.instance.resources;
         GS = GlobalSettings.Instance;
         UI = Userinteraface.Instance;
@@ -39,57 +41,94 @@ public class Army : MovingObject
         UI.equipmentText.text = "Equipment: " + resources.Equipment;
         
         //army spawns in the middle of left row at x=0, y=1
-        position = new Position(0, 1);
+        position = new Position(GS.ArmySpawnPositionX, GS.ArmySpawnPositionY);
+        previousPosition = new Position(GS.ArmySpawnPositionX, GS.ArmySpawnPositionY);
         transform.position = new Vector3(cs.Positions[position.Row][position.Column].x, cs.Positions[position.Row][position.Column].y, 0f);
         
         base.Start();
 	}
     
-    private void repositionArmy( int positionArmyX, int positionArmyY)
+    public void RepositionArmy( int positionArmyX, int positionArmyY)
     {
         float X = cs.Positions[positionArmyX][positionArmyY].x;
         float Y = cs.Positions[positionArmyX][positionArmyY].y;
         transform.position = new Vector3(X,Y,0f);
     }
    
-   /* 
-    private void OnDisable()
-    {
-        GameManager.instance.food = this.food;
-        GameManager.instance.gold = this.gold;
-        GameManager.instance.fighters = this.fighters;
-        GameManager.instance.equipment = this.equipment;
-    }
-    */
+   public void Withdraw()
+   {
+       RepositionArmy(position.Row, position.Column);
+   }
     
     private void CheckIfGameOver()
     {
-       if(resources.Fighters <= 0)
-        GameManager.instance.GameOver();
+        if(resources.Fighters <= 0)
+        {
+            GameManager.instance.GameOver();
+        }
+    }
+    
+    private void CheckIfLevelComplete()
+    {
+        if(level.Key == true)
+        {
+            enabled = false;
+            GameManager.instance.LevelComplete();
+        }else{
+            position.Column = previousPosition.Column;
+            position.Row = previousPosition.Row;
+        }
     }
     
     private void OnTriggerEnter2D (Collider2D other)
     {
-        if(other.tag == "Asylum")
+        
+        if(isInLocation == false)
         {
-            Debug.Log("Asylum");
-        }
-        if(other.tag == "City")
-        {
-            Debug.Log("City");
-        }
-        if(other.tag == "Cave" || other.tag == "Forest" || other.tag == "Swamp")
-        {
-            Debug.Log("Hideout");
-        }
-        if(other.tag == "Mountain" || other.tag == "Sea" || other.tag == "Desert")
-        {
-            Debug.Log("Key");
-            if(key == true)
+            isInLocation = true;
+            if(other.tag == "Asylum" && level.AsylumVisited == false)
             {
-                Invoke("Restart", GS.restartLevelDelay);
-                enabled = false;
+                level.AsylumVisited = true;
+                UI.backGroundImage.SetActive(true);
+                UI.headText.text = "Asylum";
+                UI.centerText.text = level.AsylumAnnouncement;
+                UI.bottomButton.SetActive(true);
+                resources.Food += level.AsylumDonation;
+                UI.foodText.text = "Food: " + resources.Food;
             }
+            if(other.tag == "City")
+            {
+                UI.backGroundImage.SetActive(true);
+                UI.headText.text = level.CityAnnouncement;
+                UI.yourFightersText.text = "Food: " + level.FoodCosts;
+                UI.centerText.text = "Equipment: " + level.EquipmentUnlockCosts;
+                UI.enemyFightersText.text = "Fighter: " + level.FighterCosts;
+                UI.leftButton.GetComponentInChildren<Text>().text = "Buy";
+                UI.centerButton.GetComponentInChildren<Text>().text = "Buy";
+                UI.rightButton.GetComponentInChildren<Text>().text = "Buy";
+                UI.bottomButton.SetActive(true);
+                UI.leftButton.SetActive(true);
+                UI.centerButton.SetActive(true);
+                UI.rightButton.SetActive(true);
+            }
+            if((other.tag == "Cave" || other.tag == "Forest" || other.tag == "Swamp") && resources.Fighters > 0)
+            {
+                UI.backGroundImage.SetActive(true);
+                UI.headText.text = "Fight in Hideout";
+                UI.yourFightersText.text = "Fighters: " + resources.Fighters;
+                enemies = Random.Range(level.MinEnemies, level.MaxEnemies);
+                UI.enemyFightersText.text = "Enemies: " + enemies;
+                UI.leftButton.GetComponentInChildren<Text>().text = "Attack";
+                UI.rightButton.GetComponentInChildren<Text>().text = "Withdraw";
+                UI.leftButton.SetActive(true);
+                UI.rightButton.SetActive(true);
+            }
+            if(other.tag == "Mountain" || other.tag == "Sea" || other.tag == "Desert")
+            {
+                
+            }
+        }else{
+            isInLocation = false;
         }
     }
 	
@@ -99,27 +138,24 @@ public class Army : MovingObject
        {
            resources.Food -= resources.Fighters;
        }else{
-           resources.Food = 0;
            resources.Fighters -= GS.starvingFighters;
        }
        
+       if(resources.Food < 0)
+        resources.Food = 0;
+       if(resources.Fighters < 0)
+        resources.Fighters = 0;
        UI.foodText.text = "Food: " + resources.Food;
        UI.fightersText.text = "Fighters: " + resources.Fighters;
        
        base.AttemptMove(xDir, yDir);
-       
-       CheckIfGameOver();
-    }
-    
-    private void Restart()
-    {
-        Application.LoadLevel(Application.loadedLevel);
     }
     
 	void Update () 
     {
         if(!movementInProgress)
         {
+            
             float horizontal;
             float vertical;
             
@@ -130,7 +166,11 @@ public class Army : MovingObject
                 if(position.Column == 3 || position.Row == 0)
                     return;
                 if(position.Row % 2 == 0)
+                {
+                    previousPosition.Column = position.Column;
                     position.Column++;
+                }
+                previousPosition.Row = position.Row;
                 position.Row--;
                 horizontal = GS.horizontalMovementShort * -1;
                 vertical = GS.verticalMovement;
@@ -143,7 +183,11 @@ public class Army : MovingObject
                 if(position.Column == 3 || position.Row == 12)
                     return;
                 if(position.Row % 2 == 0)
+                {
+                    previousPosition.Column = position.Column;
                     position.Column++;
+                }
+                previousPosition.Row = position.Row;
                 position.Row++;
                 horizontal = GS.horizontalMovementShort;
                 vertical = GS.verticalMovement;
@@ -154,6 +198,7 @@ public class Army : MovingObject
                 //Not possible if in first or second (left) column
                 if(position.Row == 0 || position.Row == 1)
                     return;
+                previousPosition.Row = position.Row;
                 position.Row-=2;
                 vertical = 0;
                 horizontal = GS.horizontalMovementLong * -1;
@@ -165,6 +210,7 @@ public class Army : MovingObject
                 //Not possible if in last or forelast (right) column
                 if(position.Row == 11 || position.Row == 12)
                     return;
+                previousPosition.Row = position.Row;
                 position.Row += 2;
                 vertical = 0;
                 horizontal = GS.horizontalMovementLong;
@@ -176,7 +222,11 @@ public class Army : MovingObject
                 if(position.Row == 0 || (position.Column == 0 && position.Row % 2 == 1))
                     return;
                 if(position.Row % 2 == 1)
+                {
+                    previousPosition.Column = position.Column;
                     position.Column--;
+                }
+                previousPosition.Row = position.Row;
                 position.Row--;
                 horizontal = GS.horizontalMovementShort * -1;
                 vertical = GS.verticalMovement * -1;
@@ -189,7 +239,11 @@ public class Army : MovingObject
                 if(position.Row == 12 || (position.Column == 0 && position.Row % 2 == 1))
                     return;
                 if(position.Row % 2 == 1)
+                {
+                    previousPosition.Column = position.Column;
                     position.Column--;
+                }
+                previousPosition.Row = position.Row;
                 position.Row++;
                 horizontal = GS.horizontalMovementShort;
                 vertical = GS.verticalMovement * -1;
@@ -212,6 +266,10 @@ public class Army : MovingObject
     {
         base.OnMovementFinished();
         animator.SetTrigger("armyStop");
+        
+        if(position.Row >= (GS.rows-2))
+            CheckIfLevelComplete();
+        
         if(leftMovement)
         {
             transform.Rotate(0,180,0);
@@ -219,6 +277,7 @@ public class Army : MovingObject
         }
         transform.position = new Vector3(cs.Positions[position.Row][position.Column].x, cs.Positions[position.Row][position.Column].y, 0f);
         //reposition Army to avoid position deviation after several turns
-        repositionArmy(position.Row, position.Column);
+        CheckIfGameOver();
+        RepositionArmy(position.Row, position.Column);
     }
 }

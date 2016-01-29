@@ -20,6 +20,9 @@ public class Level
         fields = new string[GS.boardLength];
     }
 	
+    public bool Key;
+    public bool AsylumVisited;
+    public int CurrentLevel;
     public string UnlockableEquipment;
     public int EquipmentUnlockCosts;
     public string LevelAnnouncement;
@@ -39,7 +42,7 @@ public class Level
 	public Position asylumPosition;
 	
 	private int rnd;
-	private int index = 0;
+	private int index;
     private GlobalSettings GS;
     
     //Indexer for fields
@@ -67,8 +70,11 @@ public class Level
 	
 	public void createLevel(int level)
 	{
-        FoodCosts = 1;
-        FighterCosts = 2;
+        index = 0;
+        CurrentLevel = level;
+        FoodCosts = GS.foodCosts;
+        FighterCosts = GS.fighterCosts;
+        Key = false;
 		switch (level)
 		{
 			case 1: 

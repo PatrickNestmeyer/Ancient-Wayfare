@@ -10,6 +10,7 @@ public class Resources
     private int food;
     private float attackFactor;
     private float defenseFactor;
+    private bool key;
     private GlobalSettings GS;
     
     public static Resources Instance
@@ -51,6 +52,11 @@ public class Resources
     {
         get{return defenseFactor;}
     }
+    public bool Key
+    {
+        get{return key;}
+        set{key = value;}
+    }
     
     public void setEquipment(string equipment)
     {
@@ -86,5 +92,6 @@ public class Resources
         gold = GS.startingGold;
         fighters = GS.startingFighters;
         food = GS.startingFood;
+        key = false;
     }
 }

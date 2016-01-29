@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
             instance = this;
         else if(instance != this)
             Destroy(gameObject);
-            
+        
         level = Level.Instance;
         GS = GlobalSettings.Instance;
         currentLevel = GS.startingLevel;
@@ -31,31 +31,27 @@ public class GameManager : MonoBehaviour
 		boardScript = GetComponent<BoardManager>();
 		InitGame();
 	}
-    
+	
     private void OnLevelWasLoaded(int index)
     {
         currentLevel++;
         InitGame();
     }
-	
+    
 	void InitGame()
 	{
-        doingSetup = true;
+        level.createLevel(currentLevel);
         
         UI.RemoveText();
         UI.DisableButtons();
-        
-        level.createLevel(currentLevel);
-        
         InitGuiElements();
-        
-        //Invoke("StartLevel", GS.levelStartDelay);
         
 		boardScript.SetupScene(currentLevel);
 	}
     
     private void StartLevel()
     {
+        level.AsylumVisited = false;
         UI.DisableButtons();
         UI.RemoveText();
     }
@@ -70,9 +66,38 @@ public class GameManager : MonoBehaviour
     
     public void GameOver()
     {
+        
         UI.centerText.text = "You were not strong enough!";
         UI.backGroundImage.SetActive(true);
+        Army.instance.position.Row = level.asylumPosition.Row;
+        Army.instance.position.Column = level.asylumPosition.Column;
+        Army.instance.RepositionArmy(Army.instance.position.Row, Army.instance.position.Column);
+        resources.Fighters = GS.startingFighters;
+        resources.Food = GS.startingFood;
+        UI.bottomButton.SetActive(true);
         enabled = false;
+    }
+    
+    public void FightVictory()
+    {
+        UI.RemoveText();
+        UI.DisableButtons();
+        
+        UI.headText.text = "Victory - You found " + level.DefeatEnemyReward + "Gold";
+        if(level.Key == false)
+        {
+            UI.centerText.text = level.KeyFreeText;
+            level.Key = true;
+        }
+        resources.Gold += level.DefeatEnemyReward;
+        UI.goldText.text = "Gold: " + resources.Gold;
+        UI.bottomButton.SetActive(true);
+    }
+    
+    public void LevelComplete()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+        
     }
 	
 	void Update ()

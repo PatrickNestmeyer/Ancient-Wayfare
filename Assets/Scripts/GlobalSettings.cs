@@ -37,12 +37,15 @@ public class GlobalSettings
         public int loopOffset = -1;
         
         // ===== General Game Settings =====
-        public float levelStartDelay = 3.5f;
         public int startingLevel = 1;
         public string startingEquipment = "light";
         public int startingGold = 10;
         public int startingFighters = 10;
         public int startingFood = 50;
+        public int foodCosts = 1;
+        public int fighterCosts = 2;
+        public int respawnFoodFactor = 10;
+        public int respawnFightersFactor = 5;
         
         // ===== Level Settings =====
         public int hideout1XPos = 6;
@@ -51,10 +54,10 @@ public class GlobalSettings
         public int hideout2YPos = 2;
         public int hideout3XPos = 10;
         public int hideout3YPos = 2;
-        public int cityPositionXPos = 10;
-        public int cityPositionYPos = 2;
-        public int asylumPositionXPos = 10;
-        public int asylumPositionYPos = 2;
+        public int cityPositionXPos = 6;
+        public int cityPositionYPos = 1;
+        public int asylumPositionXPos = 3;
+        public int asylumPositionYPos = 1;
         
         // ===== Equipment Factor Settings =====
         public float attackFactorLight = 1.0f;

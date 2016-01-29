@@ -5,6 +5,7 @@ using Random = UnityEngine.Random;
 
 public class rightButtonClick : MonoBehaviour {
 
+    private GlobalSettings GS;
 	private Level level;
     private Resources resources;
     private Userinteraface UI;
@@ -12,6 +13,7 @@ public class rightButtonClick : MonoBehaviour {
     
     void Start()
     {
+        GS = GlobalSettings.Instance;
         level = Level.Instance;
         UI = Userinteraface.Instance;
         resources = Resources.Instance;
@@ -27,6 +29,8 @@ public class rightButtonClick : MonoBehaviour {
             {
                 resources.Gold -= level.FighterCosts;
                 resources.Fighters++;
+                UI.goldText.text = "Gold: " + resources.Gold;
+                UI.fightersText.text = "Fighters: " + resources.Fighters;
             }
         }
         if(buttonText == "Withdraw")
@@ -37,7 +41,7 @@ public class rightButtonClick : MonoBehaviour {
             UI.RemoveText();
             UI.backGroundImage.SetActive(false);
             
-            //Reposition army
+            Army.instance.Withdraw();
         }
     }
 }

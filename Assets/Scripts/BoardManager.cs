@@ -113,4 +113,21 @@ public class BoardManager : MonoBehaviour
 		BoardSetup();
 		PlacesSetup();
 	}
+    
+    public void killScene()
+    {
+        /*
+        var children = new List<GameObject>();
+        foreach (Transform child in boardHolder) children.Add(child.gameObject);
+        children.ForEach( Destroy(child);
+        */
+        /*
+        int childs = boardHolder.childCount;
+        for (int i = childs - 1; i > 0; i--)
+        {
+            GameObject.Destroy(boardHolder.GetChild(i).gameObject);
+        }*/
+        
+        GameObject.Destroy(boardHolder.gameObject);
+    }
 }
