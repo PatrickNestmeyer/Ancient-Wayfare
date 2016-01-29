@@ -1404,6 +1404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 114388, guid: 4d8cf93ba90c1be44a411915044b0e3e, type: 2}
   army: {fileID: 177984, guid: d0ebc39b91ee00c4d9f336adf4ed1fb4, type: 2}
+  HS: {fileID: 11458808, guid: 8de150cdeb1710b41bf776db66600c8b, type: 2}
 --- !u!114 &1606114577
 MonoBehaviour:
   m_ObjectHideFlags: 0

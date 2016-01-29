@@ -30,5 +30,9 @@ public class centerButtonClick : MonoBehaviour
                 UI.equipmentText.text = "Food: " + resources.Equipment;
             }
         }
+        if(buttonText == "Finish")
+        {
+            Application.Quit();
+        }
     }
 }

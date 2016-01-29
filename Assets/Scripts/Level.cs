@@ -21,7 +21,6 @@ public class Level
     }
 	
     public bool Key;
-    public bool AsylumVisited;
     public int CurrentLevel;
     public string UnlockableEquipment;
     public int EquipmentUnlockCosts;

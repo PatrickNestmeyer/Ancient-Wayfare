@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public Userinteraface UI;
     public Resources resources;
     
+    private Highscore HS;
     private Level level;
 	private int currentLevel;
     private bool doingSetup;
@@ -25,7 +26,9 @@ public class GameManager : MonoBehaviour
         GS = GlobalSettings.Instance;
         currentLevel = GS.startingLevel;
         UI = Userinteraface.Instance;
+        UI.FindUiElements();
         resources = Resources.Instance;
+        HS = Highscore.instance;
         
         DontDestroyOnLoad(gameObject);
 		boardScript = GetComponent<BoardManager>();
@@ -35,7 +38,9 @@ public class GameManager : MonoBehaviour
     private void OnLevelWasLoaded(int index)
     {
         currentLevel++;
+        UI.FindUiElements();
         InitGame();
+        Army.instance.asylumVisited = false;
     }
     
 	void InitGame()
@@ -51,7 +56,6 @@ public class GameManager : MonoBehaviour
     
     private void StartLevel()
     {
-        level.AsylumVisited = false;
         UI.DisableButtons();
         UI.RemoveText();
     }
@@ -66,11 +70,11 @@ public class GameManager : MonoBehaviour
     
     public void GameOver()
     {
-        
         UI.centerText.text = "You were not strong enough!";
         UI.backGroundImage.SetActive(true);
         Army.instance.position.Row = level.asylumPosition.Row;
         Army.instance.position.Column = level.asylumPosition.Column;
+        Army.instance.isInLocation = false;
         Army.instance.RepositionArmy(Army.instance.position.Row, Army.instance.position.Column);
         resources.Fighters = GS.startingFighters;
         resources.Food = GS.startingFood;
@@ -78,11 +82,23 @@ public class GameManager : MonoBehaviour
         enabled = false;
     }
     
+    public void GameWon()
+    {
+        UI.RemoveText();
+        UI.DisableButtons();
+        
+        UI.headText.text = "Game Finihed";
+        UI.centerText.text = "Hihgscore: " + HS.getHighscore();
+        UI.centerButton.GetComponentInChildren<Text>().text = "Finish";
+        UI.centerButton.SetActive(true);
+    }
+    
     public void FightVictory()
     {
         UI.RemoveText();
         UI.DisableButtons();
         
+        //UI.headText.text = HS.Time.ToString();
         UI.headText.text = "Victory - You found " + level.DefeatEnemyReward + "Gold";
         if(level.Key == false)
         {
@@ -96,8 +112,15 @@ public class GameManager : MonoBehaviour
     
     public void LevelComplete()
     {
-        Application.LoadLevel(Application.loadedLevel);
-        
+        if(currentLevel < 4)
+        {
+            Destroy(UI.uiCanvas);
+            Application.LoadLevel(Application.loadedLevel);
+        }
+        else
+        {
+            //congrats
+        }
     }
 	
 	void Update ()

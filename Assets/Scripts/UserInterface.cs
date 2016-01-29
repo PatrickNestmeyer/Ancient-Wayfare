@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class Userinteraface {
+public class Userinteraface{
 
     private static Userinteraface instance;
     
@@ -23,8 +23,12 @@ public class Userinteraface {
     
     public Userinteraface()
     {
-        
-       backGroundImage = GameObject.Find("BackgroundImage");
+       UnityEngine.MonoBehaviour.DontDestroyOnLoad(uiCanvas);
+    }
+    
+    public void FindUiElements()
+    {
+        backGroundImage = GameObject.Find("BackgroundImage");
        centerButton = GameObject.Find("centerButton");
        leftButton = GameObject.Find("leftButton");
        rightButton = GameObject.Find("rightButton");
@@ -39,7 +43,6 @@ public class Userinteraface {
        enemyFightersText = GameObject.Find("enemyFightersText").GetComponent<Text>();
        
        uiCanvas = GameObject.Find("uiCanvas");
-       UnityEngine.MonoBehaviour.DontDestroyOnLoad(uiCanvas);
     }
     
     public static Userinteraface Instance

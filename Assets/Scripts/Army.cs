@@ -9,9 +9,11 @@ public class Army : MovingObject
     public CoordinateSystem cs;
     public static Army instance = null;
     
+    public bool bossfight = true;
+    public bool asylumVisited = false;
     public bool isInLocation = false;
     public int enemies;
-    private Level level;    
+    private Level level;
     private GlobalSettings GS;
     private Userinteraface UI;
     private Resources resources;
@@ -70,13 +72,28 @@ public class Army : MovingObject
     
     private void CheckIfLevelComplete()
     {
-        if(level.Key == true)
+        if(level.CurrentLevel == 4)
         {
-            enabled = false;
-            GameManager.instance.LevelComplete();
-        }else{
-            position.Column = previousPosition.Column;
-            position.Row = previousPosition.Row;
+            UI.backGroundImage.SetActive(true);
+            UI.headText.text = "Boss Fight";
+            UI.yourFightersText.text = "Fighters: " + resources.Fighters;
+            enemies = Random.Range(level.MinEnemies, level.MaxEnemies);
+            UI.enemyFightersText.text = "Enemies: " + enemies;
+            UI.leftButton.GetComponentInChildren<Text>().text = "Attack";
+            UI.rightButton.GetComponentInChildren<Text>().text = "Withdraw";
+            UI.leftButton.SetActive(true);
+            UI.rightButton.SetActive(true);
+        }
+        else
+        {
+            if(level.Key == true)
+            {
+                enabled = false;
+                GameManager.instance.LevelComplete();
+            }else{
+                position.Column = previousPosition.Column;
+                position.Row = previousPosition.Row;
+            }
         }
     }
     
@@ -86,9 +103,9 @@ public class Army : MovingObject
         if(isInLocation == false)
         {
             isInLocation = true;
-            if(other.tag == "Asylum" && level.AsylumVisited == false)
+            if(other.tag == "Asylum" && asylumVisited == false)
             {
-                level.AsylumVisited = true;
+                asylumVisited = true;
                 UI.backGroundImage.SetActive(true);
                 UI.headText.text = "Asylum";
                 UI.centerText.text = level.AsylumAnnouncement;
@@ -123,9 +140,9 @@ public class Army : MovingObject
                 UI.leftButton.SetActive(true);
                 UI.rightButton.SetActive(true);
             }
-            if(other.tag == "Mountain" || other.tag == "Sea" || other.tag == "Desert")
+            if(other.tag == "Mountain" && level.CurrentLevel == 4)
             {
-                
+                bossfight = true;
             }
         }else{
             isInLocation = false;

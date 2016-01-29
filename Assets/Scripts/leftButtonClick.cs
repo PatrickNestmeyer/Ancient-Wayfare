@@ -52,6 +52,8 @@ public class leftButtonClick : MonoBehaviour {
         if(enemies < 0)
             enemies = 0;
         
+        Army.instance.enemies = enemies;
+        
         UI.enemyFightersText.text = "Enemies: " + enemies;
         UI.centerText.text = "Fighters killed " + attackFighters + " Enemies";
         yield return new WaitForSeconds(2);
@@ -63,6 +65,7 @@ public class leftButtonClick : MonoBehaviour {
             yield return new WaitForSeconds(2);
             attackEnemy = (int) (enemies * resources.DefenseFactor);
             resources.Fighters -= attackEnemy;
+            Highscore.instance.KilledEnemies += attackEnemy;
             if(resources.Fighters < 0)
                 resources.Fighters = 0;
             UI.fightersText.text = "Fighters: " + resources.Fighters;
@@ -70,6 +73,9 @@ public class leftButtonClick : MonoBehaviour {
             yield return new WaitForSeconds(2);
             if(resources.Fighters == 0)
             {
+                if(level.CurrentLevel == 4)
+                    Army.instance.bossfight = false;
+                //Defeat
                 UI.RemoveText();
                 UI.DisableButtons();
                 GameManager.instance.GameOver();
@@ -79,7 +85,16 @@ public class leftButtonClick : MonoBehaviour {
             }
         }else{
             //Victory
-            GameManager.instance.FightVictory();
+            if(level.CurrentLevel == 4 && Army.instance.bossfight == true)
+            {
+                Debug.Log("Won");
+                GameManager.instance.GameWon();
+            }
+            else
+            {
+                GameManager.instance.FightVictory();
+            }
+            
         }
     }
 }
